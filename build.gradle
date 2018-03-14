@@ -1,0 +1,49 @@
+apply from: environmentScript
+
+buildscript {
+   repositories {
+     mavenCentral()
+       google()
+   }
+
+   dependencies {
+     classpath 'com.android.tools.build:gradle:3.0.1'
+   }
+}
+
+def _compileSdkVersion = 27
+def _buildToolsVersion = "27.0.0"
+
+subprojects { subproj ->
+
+  subproj.plugins.withType(com.android.build.gradle.AppPlugin.class) {
+         subproj.android {
+             compileSdkVersion _compileSdkVersion
+             buildToolsVersion _buildToolsVersion
+         }
+  }
+
+  subproj.plugins.withType(com.android.build.gradle.LibraryPlugin.class) {
+         subproj.android {
+             compileSdkVersion _compileSdkVersion
+             buildToolsVersion _buildToolsVersion
+         }
+  }
+}
+
+//informs if we're in the default environment (vanilla Gradle, outside LinkedIn).
+boolean isDefaultEnvironment() {
+  !project.hasProperty('overrideBuildEnvironment')
+}
+ 
+//gets the environment script. By default it grabs the 'defaultEnvironment.gradle' file.
+//it is configurable via 'overrideBuildEnvironment' project property which is used by ligradle.
+File getEnvironmentScript() {
+  def out = file(defaultEnvironment? 'defaultEnvironment.gradle' : project.overrideBuildEnvironment)
+  assert out.isFile() : "The environment script [$out] does not exists or is not a file."
+  out
+}
+
+repositories {
+    google()
+}
